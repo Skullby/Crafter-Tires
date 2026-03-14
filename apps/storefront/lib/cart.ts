@@ -122,6 +122,14 @@ export async function removeCartItem(itemId: string) {
   await prisma.cartItem.delete({ where: { id: itemId } });
 }
 
+export async function clearCart() {
+  const cart = await getCart();
+
+  await prisma.cartItem.deleteMany({
+    where: { cartId: cart.id }
+  });
+}
+
 export function computeCartTotals(
   items: Array<{ quantity: number; unitPrice: { toNumber(): number } }>
 ) {

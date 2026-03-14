@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma, Prisma } from "@crafter/database";
 import { checkoutSchema } from "@crafter/database";
-import { computeCartTotals, getCart } from "../../../../lib/cart";
+import { clearCart, computeCartTotals, getCart } from "../../../../lib/cart";
 import { createMercadoPagoPreference } from "../../../../lib/mercadopago";
 
 function createOrderNumber() {
@@ -113,6 +113,8 @@ export async function POST(request: Request) {
           rawPayload: preference
         }
       });
+
+      await clearCart();
 
       return NextResponse.json({
         orderId: order.id,
