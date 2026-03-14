@@ -32,3 +32,4 @@ Thumbs.db
 
 # Wrong lockfile for this repo
 package-lock.json
+.vercel
