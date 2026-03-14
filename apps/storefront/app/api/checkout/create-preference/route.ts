@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@crafter/database";
+import { prisma, Prisma } from "@crafter/database";
 import { checkoutSchema } from "@crafter/database";
 import { computeCartTotals, getCart } from "../../../../lib/cart";
 import { createMercadoPagoPreference } from "../../../../lib/mercadopago";
@@ -7,8 +7,40 @@ import { createMercadoPagoPreference } from "../../../../lib/mercadopago";
 function createOrderNumber() {
   const now = new Date();
   const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
-  const random = Math.floor(Math.random() * 9000 + 1000);
-  return `CT-${stamp}-${random}`;
+  const time = `${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}`;
+  const random = Math.floor(Math.random() * 900000 + 100000);
+  return `CT-${stamp}-${time}-${random}`;
+}
+
+type OrderCreateWithoutNumber = Omit<Prisma.OrderCreateInput, "number">;
+
+async function createOrderWithUniqueNumber(data: OrderCreateWithoutNumber) {
+  let attempts = 0;
+
+  while (attempts < 5) {
+    try {
+      return await prisma.order.create({
+        data: {
+          ...data,
+          number: createOrderNumber()
+        },
+        include: { payments: true }
+      });
+    } catch (error) {
+      attempts += 1;
+      const isUniqueViolation =
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        (error as { code?: string }).code === "P2002";
+
+      if (!isUniqueViolation || attempts >= 5) {
+        throw error;
+      }
+    }
+  }
+
+  throw new Error("No se pudo generar un numero de orden unico");
 }
 
 export async function POST(request: Request) {
@@ -36,37 +68,33 @@ export async function POST(request: Request) {
 
     const totals = computeCartTotals(cart.items);
 
-    const order = await prisma.order.create({
-      data: {
-        number: createOrderNumber(),
-        customerId: customer.id,
-        status: "PENDING",
-        paymentStatus: "PENDING",
-        subtotal: totals.subtotal,
-        shipping: totals.shipping,
-        total: totals.total,
-        shippingAddress: payload.shippingAddress,
-        billingAddress: payload.billingSameAsShipping ? payload.shippingAddress : payload.billingAddress,
-        items: {
-          create: cart.items.map((item) => ({
-            productId: item.productId,
-            name: item.product.name,
-            sku: item.product.sku,
-            unitPrice: item.unitPrice,
-            quantity: item.quantity,
-            total: item.unitPrice.mul(item.quantity)
-          }))
-        },
-        payments: {
-          create: {
-            provider: "MERCADOPAGO",
-            status: "PENDING",
-            amount: totals.total,
-            currency: "ARS"
-          }
-        }
+    const order = await createOrderWithUniqueNumber({
+      customer: { connect: { id: customer.id } },
+      status: "PENDING",
+      paymentStatus: "PENDING",
+      subtotal: totals.subtotal,
+      shipping: totals.shipping,
+      total: totals.total,
+      shippingAddress: payload.shippingAddress,
+      billingAddress: payload.billingSameAsShipping ? payload.shippingAddress : payload.billingAddress,
+      items: {
+        create: cart.items.map((item) => ({
+          productId: item.productId,
+          name: item.product.name,
+          sku: item.product.sku,
+          unitPrice: item.unitPrice,
+          quantity: item.quantity,
+          total: item.unitPrice.mul(item.quantity)
+        }))
       },
-      include: { payments: true }
+      payments: {
+        create: {
+          provider: "MERCADOPAGO",
+          status: "PENDING",
+          amount: totals.total,
+          currency: "ARS"
+        }
+      }
     });
 
     try {

@@ -110,6 +110,9 @@ model Product {
 
   @@index([active, featured])
   @@index([brandId, categoryId])
+  @@index([active, categoryId, brandId])
+  @@index([active, width, height, rim, vehicleType])
+  @@index([active, price])
 }
 
 model ProductImage {
