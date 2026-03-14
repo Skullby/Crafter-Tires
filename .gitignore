@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+.turbo/
+coverage/
+dist/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Local databases
+prisma/dev.db
+
+# Logs
+*.log
+.codex-logs/
+
+# Local tooling
+.agents/
+AGENTS.md
+.vercel/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Wrong lockfile for this repo
+package-lock.json
