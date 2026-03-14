@@ -169,6 +169,7 @@ CREATE TABLE "Order" (
     "shippingAddress" JSONB NOT NULL,
     "billingAddress" JSONB,
     "notes" TEXT,
+    "stockAppliedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -237,6 +238,15 @@ CREATE INDEX "Product_active_featured_idx" ON "Product"("active", "featured");
 CREATE INDEX "Product_brandId_categoryId_idx" ON "Product"("brandId", "categoryId");
 
 -- CreateIndex
+CREATE INDEX "Product_active_categoryId_brandId_idx" ON "Product"("active", "categoryId", "brandId");
+
+-- CreateIndex
+CREATE INDEX "Product_active_width_height_rim_vehicleType_idx" ON "Product"("active", "width", "height", "rim", "vehicleType");
+
+-- CreateIndex
+CREATE INDEX "Product_active_price_idx" ON "Product"("active", "price");
+
+-- CreateIndex
 CREATE INDEX "ProductSpecification_productId_idx" ON "ProductSpecification"("productId");
 
 -- CreateIndex
@@ -256,6 +266,9 @@ CREATE UNIQUE INDEX "Order_number_key" ON "Order"("number");
 
 -- CreateIndex
 CREATE INDEX "Order_customerId_createdAt_idx" ON "Order"("customerId", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "Order_paymentStatus_status_createdAt_idx" ON "Order"("paymentStatus", "status", "createdAt");
 
 -- CreateIndex
 CREATE INDEX "OrderItem_orderId_idx" ON "OrderItem"("orderId");
@@ -304,3 +317,4 @@ ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_productId_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "Payment" ADD CONSTRAINT "Payment_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
