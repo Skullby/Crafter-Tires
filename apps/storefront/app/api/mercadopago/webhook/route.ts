@@ -3,7 +3,8 @@ import { prisma } from "@crafter/database";
 import {
   applyApprovedPayment,
   fetchPaymentDetails,
-  mapMercadoPagoStatus
+  mapMercadoPagoStatus,
+  mapOrderStatusFromPaymentStatus
 } from "../../../../lib/mercadopago";
 
 export async function POST(request: Request) {
@@ -43,16 +44,16 @@ export async function POST(request: Request) {
       }
     });
 
-    await prisma.order.update({
-      where: { id: orderId },
-      data: {
-        paymentStatus: status,
-        status: status === "APPROVED" ? "PAID" : "PENDING"
-      }
-    });
-
     if (status === "APPROVED") {
       await applyApprovedPayment(orderId);
+    } else {
+      await prisma.order.update({
+        where: { id: orderId },
+        data: {
+          paymentStatus: status,
+          status: mapOrderStatusFromPaymentStatus(status)
+        }
+      });
     }
 
     return NextResponse.json({ ok: true });

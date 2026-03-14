@@ -119,6 +119,20 @@ export async function updateProductAction(formData: FormData) {
           }
         });
       }
+    } else {
+      await tx.inventory.create({
+        data: {
+          productId: id,
+          stock,
+          movements: {
+            create: {
+              change: stock,
+              reason: "ADMIN_UPDATE",
+              note: "Inventario creado desde productos"
+            }
+          }
+        }
+      });
     }
 
     await tx.product.update({
@@ -222,6 +236,20 @@ export async function updateProductDetailsAction(formData: FormData) {
           }
         });
       }
+    } else {
+      await tx.inventory.create({
+        data: {
+          productId: id,
+          stock: parsed.stock,
+          movements: {
+            create: {
+              change: parsed.stock,
+              reason: "ADMIN_EDIT",
+              note: "Inventario creado desde edicion completa"
+            }
+          }
+        }
+      });
     }
   });
 

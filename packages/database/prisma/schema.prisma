@@ -190,12 +190,14 @@ model Order {
   shippingAddress   Json
   billingAddress    Json?
   notes             String?
+  stockAppliedAt    DateTime?
   items             OrderItem[]
   payments          Payment[]
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
   @@index([customerId, createdAt])
+  @@index([paymentStatus, status, createdAt])
 }
 
 model OrderItem {

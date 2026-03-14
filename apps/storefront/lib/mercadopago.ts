@@ -90,29 +90,63 @@ export function mapMercadoPagoStatus(status: string): PaymentStatus {
   return PaymentStatus.FAILED;
 }
 
-export async function applyApprovedPayment(orderId: string) {
-  const order = await prisma.order.findUnique({
-    where: { id: orderId },
-    include: {
-      items: true
-    }
-  });
-
-  if (!order || order.paymentStatus === PaymentStatus.APPROVED) {
-    return;
+export function mapOrderStatusFromPaymentStatus(status: PaymentStatus) {
+  if (status === PaymentStatus.APPROVED) {
+    return "PAID" as const;
   }
 
+  if (status === PaymentStatus.PENDING) {
+    return "PENDING" as const;
+  }
+
+  return "CANCELED" as const;
+}
+
+export async function applyApprovedPayment(orderId: string) {
   await prisma.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: true
+      }
+    });
+
+    if (!order) {
+      return;
+    }
+
+    if (order.stockAppliedAt) {
+      if (order.paymentStatus !== PaymentStatus.APPROVED || order.status !== "PAID") {
+        await tx.order.update({
+          where: { id: order.id },
+          data: {
+            paymentStatus: PaymentStatus.APPROVED,
+            status: "PAID"
+          }
+        });
+      }
+      return;
+    }
+
     for (const item of order.items) {
       const inventory = await tx.inventory.findUnique({ where: { productId: item.productId } });
       if (!inventory) {
-        continue;
+        throw new Error(`Inventario faltante para producto ${item.productId}`);
       }
 
-      await tx.inventory.update({
-        where: { id: inventory.id },
-        data: { stock: { decrement: item.quantity } }
+      const updated = await tx.inventory.updateMany({
+        where: {
+          id: inventory.id,
+          stock: { gte: item.quantity }
+        },
+        data: {
+          stock: { decrement: item.quantity }
+        }
       });
+
+      if (updated.count !== 1) {
+        throw new Error(`Stock insuficiente para aplicar la orden ${order.number}`);
+      }
 
       await tx.inventoryMovement.create({
         data: {
@@ -128,7 +162,8 @@ export async function applyApprovedPayment(orderId: string) {
       where: { id: order.id },
       data: {
         status: "PAID",
-        paymentStatus: "APPROVED"
+        paymentStatus: PaymentStatus.APPROVED,
+        stockAppliedAt: new Date()
       }
     });
   });
