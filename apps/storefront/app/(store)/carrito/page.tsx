@@ -3,11 +3,14 @@ import { CartClient } from "../../../components/cart-client";
 import { computeCartTotals, getCart } from "../../../lib/cart";
 import { formatCurrency, formatMeasure } from "../../../lib/format";
 
+type CartData = Awaited<ReturnType<typeof getCart>>;
+type CartItem = CartData["items"][number];
+
 export default async function CartPage() {
   const cart = await getCart();
   const totals = computeCartTotals(cart.items);
 
-  const mappedItems = cart.items.map((item) => ({
+  const mappedItems = cart.items.map((item: CartItem) => ({
     id: item.id,
     quantity: item.quantity,
     unitPrice: item.unitPrice.toNumber(),
