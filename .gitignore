@@ -24,6 +24,7 @@ prisma/dev.db
 .agents/
 AGENTS.md
 .vercel/
+supabase/.temp/
 
 # OS files
 .DS_Store
