@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@crafter/database";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_STOREFRONT_URL ?? "http://localhost:3000";
   const products = await prisma.product.findMany({ where: { active: true }, select: { slug: true, updatedAt: true } });

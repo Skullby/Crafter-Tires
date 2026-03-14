@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { auth } from "../../lib/auth";
 import { logoutAction } from "../../lib/actions";
 
+export const dynamic = "force-dynamic";
+
 const nav = [
   { href: "/", label: "Dashboard" },
   { href: "/productos", label: "Productos" },
