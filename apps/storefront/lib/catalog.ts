@@ -1,4 +1,5 @@
-import { prisma, VehicleType } from "@crafter/database";
+import { prisma } from "@crafter/database";
+import type { VehicleType } from "@prisma/client";
 
 export type CatalogFilters = {
   query?: string;

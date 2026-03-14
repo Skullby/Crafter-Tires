@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { type VehicleType } from "@crafter/database";
+import type { VehicleType } from "@prisma/client";
 import { MeasureFinder } from "../../../components/measure-finder";
 import { ProductCard } from "../../../components/product-card";
 import { getBrands, getCatalogProducts, getCategories } from "../../../lib/catalog";
