@@ -1,5 +1,7 @@
 "use server";
 
+import "./load-env";
+
 import { revalidatePath } from "next/cache";
 import { productInputSchema } from "@crafter/database";
 import { auth, signOut } from "./auth";

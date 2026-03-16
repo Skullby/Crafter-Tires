@@ -33,16 +33,23 @@ export default function LoginPage() {
               return;
             }
 
-            if (!result.ok) {
+            if (result.error) {
               if (result.error === "CredentialsSignin") {
                 setError("Email o clave incorrectos, o usuario inactivo.");
+              } else if (result.error === "Configuration") {
+                setError("La autenticacion no esta configurada correctamente. Revisa las variables de entorno del admin.");
               } else {
                 setError("No se pudo iniciar sesion. Intenta nuevamente.");
               }
               return;
             }
 
-            window.location.href = result.url ?? "/";
+            if (!result.url) {
+              setError("No se recibio una redireccion valida despues de iniciar sesion.");
+              return;
+            }
+
+            window.location.href = result.url;
           } catch (err) {
             setError("Ocurrio un error inesperado al iniciar sesion. Revisa tu conexion e intenta otra vez.");
           } finally {

@@ -5,3 +5,38 @@
 body {
   @apply bg-slate-100 text-slate-900 antialiased;
 }
+
+@layer base {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]),
+  select,
+  textarea {
+    @apply border-slate-300 bg-white text-slate-900 placeholder:text-slate-400;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]):hover,
+  select:hover,
+  textarea:hover {
+    @apply border-slate-400;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]):focus,
+  select:focus,
+  textarea:focus {
+    @apply border-orange-500 text-slate-900 outline-none ring-2 ring-orange-200;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]):disabled,
+  select:disabled,
+  textarea:disabled {
+    @apply cursor-not-allowed border-slate-200 bg-slate-100 text-slate-500 placeholder:text-slate-400;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    @apply text-orange-500 accent-orange-500;
+  }
+
+  label {
+    @apply text-slate-700;
+  }
+}
