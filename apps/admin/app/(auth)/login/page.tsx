@@ -15,21 +15,39 @@ export default function LoginPage() {
           event.preventDefault();
           setLoading(true);
           setError(null);
+
           const form = new FormData(event.currentTarget);
           const email = String(form.get("email") ?? "");
           const password = String(form.get("password") ?? "");
-          const result = await signIn("credentials", {
-            email,
-            password,
-            redirect: false,
-            callbackUrl: "/"
-          });
-          if (!result?.ok) {
-            setError("Credenciales invalidas");
+
+          try {
+            const result = await signIn("credentials", {
+              email,
+              password,
+              redirect: false,
+              callbackUrl: "/"
+            });
+
+            if (!result) {
+              setError("No se pudo contactar al servidor de autenticacion. Intenta de nuevo.");
+              return;
+            }
+
+            if (!result.ok) {
+              if (result.error === "CredentialsSignin") {
+                setError("Email o clave incorrectos, o usuario inactivo.");
+              } else {
+                setError("No se pudo iniciar sesion. Intenta nuevamente.");
+              }
+              return;
+            }
+
+            window.location.href = result.url ?? "/";
+          } catch (err) {
+            setError("Ocurrio un error inesperado al iniciar sesion. Revisa tu conexion e intenta otra vez.");
+          } finally {
             setLoading(false);
-            return;
           }
-          window.location.href = "/";
         }}
       >
         <h1 className="text-2xl font-bold">Admin Crafter Tires</h1>
