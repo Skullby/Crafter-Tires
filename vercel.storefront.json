@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "builds": [
+    {
+      "src": "apps/storefront/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "buildCommand": "pnpm --filter @crafter/database db:generate && pnpm --filter storefront build"
+}
