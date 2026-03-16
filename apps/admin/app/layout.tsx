@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Admin Crafter Tires",
-  description: "Panel de administraci�n de Crafter Tires"
+  description: "Panel de administracion de Crafter Tires"
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

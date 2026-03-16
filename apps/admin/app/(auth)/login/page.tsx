@@ -25,7 +25,7 @@ export default function LoginPage() {
             callbackUrl: "/"
           });
           if (!result?.ok) {
-            setError("Credenciales inv�lidas");
+            setError("Credenciales invalidas");
             setLoading(false);
             return;
           }
@@ -33,10 +33,10 @@ export default function LoginPage() {
         }}
       >
         <h1 className="text-2xl font-bold">Admin Crafter Tires</h1>
-        <p className="mt-2 text-sm text-slate-600">Ingres� con tu cuenta de administrador o manager.</p>
+        <p className="mt-2 text-sm text-slate-600">Ingresa con tu cuenta de administrador o manager.</p>
         <div className="mt-6 space-y-3">
           <input className="w-full rounded-lg border p-3" name="email" type="email" required placeholder="Email" />
-          <input className="w-full rounded-lg border p-3" name="password" type="password" required placeholder="Contrase�a" />
+          <input className="w-full rounded-lg border p-3" name="password" type="password" required placeholder="Clave" />
         </div>
         {error ? <p className="mt-3 text-sm text-red-700">{error}</p> : null}
         <button disabled={loading} className="mt-5 w-full rounded-lg bg-accent p-3 font-semibold text-white" type="submit">
