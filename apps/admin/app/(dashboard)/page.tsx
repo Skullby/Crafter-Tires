@@ -9,6 +9,23 @@ export default async function DashboardPage() {
       prisma.order.findMany({ orderBy: { createdAt: "desc" }, take: 5, include: { customer: true } })
     ]);
 
+    const BADGE_MAP = {
+      order: {
+        PENDING: { label: "Pendiente", className: "admin-badge-warning" },
+        PROCESSING: { label: "En proceso", className: "admin-badge-warning" },
+        PAID: { label: "Pagada", className: "admin-badge-success" },
+        SHIPPED: { label: "Enviada", className: "admin-badge-success" },
+        DELIVERED: { label: "Entregada", className: "admin-badge-success" },
+        CANCELED: { label: "Cancelada", className: "admin-badge-danger" }
+      } as const,
+      payment: {
+        PENDING: { label: "Pendiente", className: "admin-badge-warning" },
+        APPROVED: { label: "Aprobado", className: "admin-badge-success" },
+        REJECTED: { label: "Rechazado", className: "admin-badge-danger" },
+        FAILED: { label: "Fallido", className: "admin-badge-danger" }
+      } as const
+    };
+
     return (
       <div className="admin-page">
         <div className="admin-page-header">
@@ -56,14 +73,29 @@ export default async function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {recentOrders.map((order) => (
-                  <tr key={order.id}>
-                    <td className="font-medium text-slate-900">{order.number}</td>
-                    <td>{order.customer.email}</td>
-                    <td>{order.status}</td>
-                    <td>{order.paymentStatus}</td>
-                  </tr>
-                ))}
+                {recentOrders.map((order) => {
+                  const orderBadge = BADGE_MAP.order[order.status as keyof typeof BADGE_MAP.order] ?? {
+                    label: order.status,
+                    className: "admin-badge-warning"
+                  };
+                  const paymentBadge = BADGE_MAP.payment[order.paymentStatus as keyof typeof BADGE_MAP.payment] ?? {
+                    label: order.paymentStatus,
+                    className: "admin-badge-warning"
+                  };
+
+                  return (
+                    <tr key={order.id}>
+                      <td className="font-medium text-slate-900">{order.number}</td>
+                      <td>{order.customer.email}</td>
+                      <td>
+                        <span className={orderBadge.className}>{orderBadge.label}</span>
+                      </td>
+                      <td>
+                        <span className={paymentBadge.className}>{paymentBadge.label}</span>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

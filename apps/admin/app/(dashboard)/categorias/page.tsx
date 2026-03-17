@@ -18,8 +18,8 @@ export default async function CategoriesPage() {
         <h2 className="admin-card-title">Nueva categoría</h2>
         <p className="admin-card-subtitle">Creá una categoría con nombre y slug para usar en productos.</p>
         <div className="mt-4 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
-          <input name="name" required placeholder="Nombre" className="rounded-xl border p-3" />
-          <input name="slug" required placeholder="Slug" className="rounded-xl border p-3" />
+          <input name="name" required placeholder="Nombre" className="admin-field" />
+          <input name="slug" required placeholder="Slug" className="admin-field" />
           <button className="admin-btn-primary" type="submit">Crear</button>
         </div>
       </form>
@@ -29,7 +29,7 @@ export default async function CategoriesPage() {
         <p className="admin-card-subtitle">Editá nombre, slug y estado sin salir de la lista.</p>
 
         {categories.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-500">
+          <div className="mt-4 admin-empty-state">
             No hay categorías cargadas todavía.
           </div>
         ) : (
@@ -38,9 +38,9 @@ export default async function CategoriesPage() {
               <li key={category.id} className="rounded-2xl border border-slate-200 p-4">
                 <form action={saveCategoryAction} className="grid gap-3 md:grid-cols-[1fr_1fr_auto_auto] md:items-center">
                   <input type="hidden" name="id" value={category.id} />
-                  <input name="name" defaultValue={category.name} className="rounded-xl border p-3" />
-                  <input name="slug" defaultValue={category.slug} className="rounded-xl border p-3" />
-                  <label className="flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-3 text-sm">
+                  <input name="name" defaultValue={category.name} className="admin-field" />
+                  <input name="slug" defaultValue={category.slug} className="admin-field" />
+                  <label className="admin-check-card">
                     <input type="checkbox" name="active" defaultChecked={category.active} /> Activa
                   </label>
                   <button className="admin-btn-primary" type="submit">Guardar</button>
