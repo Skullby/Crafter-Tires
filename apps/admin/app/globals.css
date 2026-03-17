@@ -40,3 +40,101 @@ body {
     @apply text-slate-700;
   }
 }
+
+@layer components {
+  .admin-page {
+    @apply space-y-6;
+  }
+
+  .admin-page-header {
+    @apply flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between;
+  }
+
+  .admin-page-title {
+    @apply text-3xl font-bold tracking-tight text-slate-950;
+  }
+
+  .admin-page-description {
+    @apply text-sm text-slate-500;
+  }
+
+  .admin-card {
+    @apply rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5;
+  }
+
+  .admin-card-title {
+    @apply text-base font-semibold text-slate-950;
+  }
+
+  .admin-card-subtitle {
+    @apply mt-1 text-sm text-slate-500;
+  }
+
+  .admin-btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .admin-btn-secondary {
+    @apply inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50;
+  }
+
+  .admin-stat-card {
+    @apply rounded-2xl border border-slate-200 bg-white p-4 shadow-sm;
+  }
+
+  .admin-table-wrap {
+    @apply overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm;
+  }
+
+  .admin-table {
+    @apply min-w-full text-sm;
+  }
+
+  .admin-table thead tr {
+    @apply bg-slate-50 text-left text-slate-500;
+  }
+
+  .admin-table th {
+    @apply px-4 py-3 font-medium;
+  }
+
+  .admin-table td {
+    @apply px-4 py-3 align-top text-slate-700;
+  }
+
+  .admin-table tbody tr {
+    @apply border-t border-slate-200;
+  }
+
+  .admin-kbd-chip {
+    @apply inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600;
+  }
+
+  .admin-badge-success {
+    @apply inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700;
+  }
+
+  .admin-badge-warning {
+    @apply inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700;
+  }
+
+  .admin-badge-danger {
+    @apply inline-flex items-center rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-700;
+  }
+
+  .admin-empty-state {
+    @apply rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-sm text-slate-500;
+  }
+
+  .admin-form-grid {
+    @apply grid gap-3 md:grid-cols-2 xl:grid-cols-4;
+  }
+
+  .admin-field {
+    @apply rounded-xl border px-4 py-3;
+  }
+
+  .admin-check-card {
+    @apply flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-3 text-sm;
+  }
+}

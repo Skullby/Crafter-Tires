@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "../../lib/auth";
 import { logoutAction } from "../../lib/actions";
+import { NavLink } from "./nav-link";
 
 export const dynamic = "force-dynamic";
 
@@ -9,9 +9,9 @@ const nav = [
   { href: "/", label: "Dashboard" },
   { href: "/productos", label: "Productos" },
   { href: "/inventario", label: "Inventario" },
-  { href: "/categorias", label: "Categor�as" },
+  { href: "/categorias", label: "Categorías" },
   { href: "/marcas", label: "Marcas" },
-  { href: "/ordenes", label: "�rdenes" },
+  { href: "/ordenes", label: "Órdenes" },
   { href: "/clientes", label: "Clientes" },
   { href: "/importaciones", label: "Importaciones" }
 ];
@@ -23,23 +23,39 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[250px_1fr]">
-      <aside className="border-r bg-slate-900 p-5 text-slate-100">
-        <p className="text-xl font-bold">Crafter Admin</p>
-        <p className="mt-1 text-xs text-slate-300">{session.user.email}</p>
-        <p className="text-xs uppercase text-orange-300">Rol: {(session.user as any).role}</p>
-        <nav className="mt-6 space-y-1 text-sm">
+    <div className="min-h-screen bg-slate-100 lg:grid lg:grid-cols-[280px_1fr]">
+      <aside className="border-b border-slate-800 bg-slate-950 px-4 py-5 text-slate-100 lg:min-h-screen lg:border-b-0 lg:border-r lg:px-5">
+        <div className="flex items-start justify-between gap-3 lg:block">
+          <div>
+            <p className="text-xl font-bold tracking-tight">Crafter Admin</p>
+            <p className="mt-1 text-sm text-slate-300">{session.user.email}</p>
+            <p className="mt-1 text-xs font-medium uppercase tracking-wide text-orange-300">Rol: {(session.user as any).role}</p>
+          </div>
+          <form action={logoutAction} className="lg:hidden">
+            <button className="rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-800">
+              Cerrar sesión
+            </button>
+          </form>
+        </div>
+
+        <nav className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-1" aria-label="Navegación principal">
           {nav.map((item) => (
-            <Link key={item.href} href={item.href} className="block rounded-lg px-3 py-2 hover:bg-slate-800">
-              {item.label}
-            </Link>
+            <NavLink key={item.href} href={item.href} label={item.label} />
           ))}
         </nav>
-        <form action={logoutAction} className="mt-6">
-          <button className="w-full rounded-lg bg-slate-700 px-3 py-2 text-sm">Cerrar sesi�n</button>
-        </form>
+
+        <div className="mt-6 hidden lg:block">
+          <form action={logoutAction}>
+            <button className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-sm font-medium text-slate-100 transition hover:bg-slate-800">
+              Cerrar sesión
+            </button>
+          </form>
+        </div>
       </aside>
-      <section className="p-5">{children}</section>
+
+      <section className="min-w-0 p-4 sm:p-6 lg:p-8">
+        <div className="mx-auto max-w-7xl">{children}</div>
+      </section>
     </div>
   );
 }

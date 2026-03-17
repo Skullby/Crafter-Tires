@@ -17,22 +17,42 @@ export default async function OrdersPage({ searchParams }: { searchParams: { q?:
   });
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">�rdenes</h1>
-      <form className="rounded-xl bg-white p-4" method="get">
-        <input name="q" defaultValue={q} placeholder="Buscar por n�mero o email" className="w-full rounded border p-2" />
+    <div className="admin-page">
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Órdenes</h1>
+          <p className="admin-page-description">Búsqueda rápida por número o email del cliente.</p>
+        </div>
+        <span className="admin-kbd-chip">{orders.length} resultados</span>
+      </div>
+
+      <form className="admin-card" method="get">
+        <label htmlFor="q" className="mb-2 block text-sm font-medium text-slate-700">
+          Buscar órdenes
+        </label>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <input id="q" name="q" defaultValue={q} placeholder="Buscar por número o email" className="w-full rounded-xl border p-3" />
+          <button className="admin-btn-primary sm:min-w-[140px]" type="submit">Buscar</button>
+        </div>
       </form>
-      <div className="rounded-xl bg-white p-4">
-        <table className="w-full text-sm">
+
+      <div className="admin-table-wrap">
+        <table className="admin-table">
           <thead>
-            <tr className="text-left text-slate-500"><th>N�mero</th><th>Cliente</th><th>Total</th><th>Orden</th><th>Pago</th></tr>
+            <tr>
+              <th>Número</th>
+              <th>Cliente</th>
+              <th>Total</th>
+              <th>Orden</th>
+              <th>Pago</th>
+            </tr>
           </thead>
           <tbody>
             {orders.map((order) => (
-              <tr key={order.id} className="border-t">
-                <td className="py-2">{order.number}</td>
+              <tr key={order.id}>
+                <td className="font-medium text-slate-950">{order.number}</td>
                 <td>{order.customer.email}</td>
-                <td>{order.total.toNumber()}</td>
+                <td>${order.total.toNumber()}</td>
                 <td>{order.status}</td>
                 <td>{order.paymentStatus}</td>
               </tr>
