@@ -18,8 +18,8 @@ export default async function BrandsPage() {
         <h2 className="admin-card-title">Nueva marca</h2>
         <p className="admin-card-subtitle">Creá una marca con nombre y slug para asignarla a productos.</p>
         <div className="mt-4 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
-          <input name="name" required placeholder="Nombre" className="rounded-xl border p-3" />
-          <input name="slug" required placeholder="Slug" className="rounded-xl border p-3" />
+          <input name="name" required placeholder="Nombre" className="admin-field" />
+          <input name="slug" required placeholder="Slug" className="admin-field" />
           <button className="admin-btn-primary" type="submit">Crear</button>
         </div>
       </form>
@@ -29,7 +29,7 @@ export default async function BrandsPage() {
         <p className="admin-card-subtitle">Editá rápidamente nombre, slug y estado.</p>
 
         {brands.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-500">
+          <div className="mt-4 admin-empty-state">
             No hay marcas cargadas todavía.
           </div>
         ) : (
@@ -38,9 +38,9 @@ export default async function BrandsPage() {
               <li key={brand.id} className="rounded-2xl border border-slate-200 p-4">
                 <form action={saveBrandAction} className="grid gap-3 md:grid-cols-[1fr_1fr_auto_auto] md:items-center">
                   <input type="hidden" name="id" value={brand.id} />
-                  <input name="name" defaultValue={brand.name} className="rounded-xl border p-3" />
-                  <input name="slug" defaultValue={brand.slug} className="rounded-xl border p-3" />
-                  <label className="flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-3 text-sm">
+                  <input name="name" defaultValue={brand.name} className="admin-field" />
+                  <input name="slug" defaultValue={brand.slug} className="admin-field" />
+                  <label className="admin-check-card">
                     <input type="checkbox" name="active" defaultChecked={brand.active} /> Activa
                   </label>
                   <button className="admin-btn-primary" type="submit">Guardar</button>

@@ -23,7 +23,7 @@ export default async function CustomersPage() {
 
       {customers.length === 0 ? (
         <div className="admin-card">
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-500">
+          <div className="admin-empty-state">
             Todavía no hay clientes registrados.
           </div>
         </div>

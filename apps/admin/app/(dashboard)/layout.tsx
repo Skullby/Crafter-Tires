@@ -6,14 +6,30 @@ import { NavLink } from "./nav-link";
 export const dynamic = "force-dynamic";
 
 const nav = [
-  { href: "/", label: "Dashboard" },
-  { href: "/productos", label: "Productos" },
-  { href: "/inventario", label: "Inventario" },
-  { href: "/categorias", label: "Categorías" },
-  { href: "/marcas", label: "Marcas" },
-  { href: "/ordenes", label: "Órdenes" },
-  { href: "/clientes", label: "Clientes" },
-  { href: "/importaciones", label: "Importaciones" }
+  {
+    label: "General",
+    items: [{ href: "/", label: "Dashboard" }]
+  },
+  {
+    label: "Catálogo",
+    items: [
+      { href: "/productos", label: "Productos" },
+      { href: "/inventario", label: "Inventario" },
+      { href: "/categorias", label: "Categorías" },
+      { href: "/marcas", label: "Marcas" }
+    ]
+  },
+  {
+    label: "Ventas",
+    items: [
+      { href: "/ordenes", label: "Órdenes" },
+      { href: "/clientes", label: "Clientes" }
+    ]
+  },
+  {
+    label: "Sistema",
+    items: [{ href: "/importaciones", label: "Importaciones" }]
+  }
 ];
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -38,9 +54,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </form>
         </div>
 
-        <nav className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-1" aria-label="Navegación principal">
-          {nav.map((item) => (
-            <NavLink key={item.href} href={item.href} label={item.label} />
+        <nav className="mt-6 space-y-4" aria-label="Navegación principal">
+          {nav.map((group) => (
+            <div key={group.label} className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{group.label}</p>
+              <div className="space-y-1">
+                {group.items.map((item) => (
+                  <NavLink key={item.href} href={item.href} label={item.label} />
+                ))}
+              </div>
+            </div>
           ))}
         </nav>
 
