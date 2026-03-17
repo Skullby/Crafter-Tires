@@ -10,7 +10,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const env = process.env.NEXT_PUBLIC_ENV_NAME ?? process.env.VERCEL_ENV ?? process.env.NODE_ENV;
   const isProduction = env === "production";
   const productionAdminUrl = process.env.NEXT_PUBLIC_PROD_ADMIN_URL ?? "https://crafter-admin.vercel.app";
-  const showStagingBanner = !isProduction || process.env.NEXT_PUBLIC_SHOW_STAGING_BANNER === "true";
+  const showStagingBanner = !isProduction && process.env.NEXT_PUBLIC_SHOW_STAGING_BANNER !== "false";
 
   return (
     <html lang="es">
