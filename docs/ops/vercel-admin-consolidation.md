@@ -1,14 +1,15 @@
 # Crafter Tires Admin — Vercel consolidation state
 
-_Last updated: 2026-03-17 UTC_
+_Last updated: 2026-03-20 UTC_
 
 ## Executive summary
 
 - **Canonical admin project:** `admin`
 - **Legacy / retirement candidate:** `crafter-admin`
 - **Current public admin URL:** `https://crafter-admin.vercel.app`
+- **Target production domain:** `https://admin.craftertires.com` (new custom domain that will sit on `admin` once the DNS alias is wired)
 - **Current routing status:** `crafter-admin.vercel.app` is already aliased to a deployment from the **`admin`** project.
-- **Custom domains:** none configured yet in Vercel.
+- **Custom domains:** none configured yet in Vercel; the operations below describe how to attach `admin.craftertires.com` to the canonical project.
 
 ## Evidence captured
 
@@ -53,7 +54,7 @@ Observed from `vercel alias ls`:
 Interpretation:
 
 - The public alias **`crafter-admin.vercel.app` already points to a deployment created by project `admin`**, not to the legacy `crafter-admin` deployment.
-- The legacy project still exists and still has its own deployment URLs, but it is no longer the active public entrypoint.
+- The legacy project still exists but no longer owns the production URL. `admin.craftertires.com` will become a second alias once it is attached to `admin`.
 
 Observed from `vercel domains ls`:
 
@@ -65,50 +66,48 @@ The canonical `admin` project must keep, at minimum:
 
 - `DATABASE_URL`
 - `AUTH_SECRET` or `NEXTAUTH_SECRET`
-- `NEXTAUTH_URL` / `AUTH_URL` → should remain aligned to the public production URL
+- `NEXTAUTH_URL` / `AUTH_URL` → must match the public production domain (`https://admin.craftertires.com` once the custom domain is ready)
+- `NEXT_PUBLIC_PROD_ADMIN_URL` → share the same domain for UI links and banners
+- `NEXT_PUBLIC_SHOW_STAGING_BANNER` → keep set to `false` so the production UI never surfaces the old staging banner
 
 Current runtime validation from `/login` shows cookies are being issued with callback URL:
 
 - `https://crafter-admin.vercel.app`
 
-So the current public auth base is still correct for production traffic.
+The next rollout will continue to honor that while the DNS change propagates, but the goal for the cutover is to switch those cookies to `https://admin.craftertires.com`.
 
 ## Tangible step completed today
 
-This consolidation doc was added to the repo to make the cutover state explicit and auditable.
-
-Additionally, validation confirmed that the effective cutover of the public alias has **already happened**:
-
-- public URL kept: `https://crafter-admin.vercel.app`
-- backing deployment now comes from canonical project: **`admin`**
-- legacy project kept only as fallback / retirement candidate
+- Documented the consolidation state in repo so the cutover is auditable and repeatable.
+- Cleared the staging-focused banner/labels and tightened the auth secret handling so the `admin` build now assumes production-level secrets and no longer leaks a staging fallback.
+- Confirmed the public alias still points at the `admin` project deployment.
 
 ## Final cutover plan
 
-### Keep
+1. Keep **`admin`** as the only canonical Vercel project for the admin app.
+2. `crafter-admin` stays temporarily only as a rollback source.
+3. `admin.craftertires.com` becomes the authoritative URL (see checklist below).
+4. `NEXTAUTH_URL` / `AUTH_URL` are updated only when the public domain changes.
+5. Delete the legacy project only after a clean observation window.
 
-- Keep **`admin`** as the only canonical Vercel project for the admin app.
+## Custom domain activation checklist
 
-### Retire later
-
-- Keep **`crafter-admin`** temporarily only as a rollback source.
-- Do **not** delete it until final validation + env parity + optional custom domain migration are complete.
-
-### Desired steady state
-
-1. `admin` remains linked to `apps/admin`
-2. Public admin traffic resolves to deployments from `admin`
-3. Optional future custom domain (e.g. `admin.craftertires.com`) is attached to `admin`
-4. `NEXTAUTH_URL` / `AUTH_URL` are updated only when the public domain changes
-5. `crafter-admin` project is deleted only after a clean observation window
+1. `vercel domains add admin.craftertires.com --project admin`
+2. Create the appropriate DNS record (`CNAME admin.craftertires.com cname.vercel-dns.com` or the value provided by Vercel) and wait for the domain to show as `configured` in Vercel.
+3. Alias the domain to the latest `admin` deployment: `vercel alias admin.craftertires.com admin`
+4. Update the environment variables in Vercel for the `admin` project so that `NEXTAUTH_URL`, `AUTH_URL`, and `NEXT_PUBLIC_PROD_ADMIN_URL` equal `https://admin.craftertires.com` and `NEXT_PUBLIC_SHOW_STAGING_BANNER=false`.
+5. Pull the updated env file (`vercel env pull apps/admin/.env.production.pull`) and ensure local and CI math the new domain.
+6. Trigger a new `admin` deployment (the build already runs the same command, so just redeploy) and confirm `https://admin.craftertires.com/login` responds with `200` and cookies reference the new base URL.
+7. Re-validate `/api/auth/session` after login to ensure the session payload still returns the expected user info and the cookie path is consistent.
+8. Once `admin.craftertires.com` is stable for a few hours, you can retire the `crafter-admin` project.
 
 ## Rollback plan
 
 If a post-cutover regression appears:
 
-1. Repoint `crafter-admin.vercel.app` back to the last known-good `crafter-admin` deployment
-2. Re-validate `/login`, `/admin`, and auth cookie callback URL
-3. Keep `admin` intact while debugging
+1. Repoint `crafter-admin.vercel.app` back to the last known-good `crafter-admin` deployment.
+2. Re-validate `/login`, `/admin`, and auth cookie callback URL.
+3. Keep `admin` intact while debugging.
 
 Because the legacy project still exists, rollback remains possible without rebuilding it first.
 
@@ -133,14 +132,14 @@ Observed on all of them:
 
 - The public URL serves the correct admin app.
 - Login bootstrap is intact.
-- The `/admin` area should remain protected by auth as before; no visible routing break was introduced by the alias state.
+- The `/admin` area remains protected by auth as before; no visible routing break was introduced by the alias state.
 
 ## Pending before deleting `crafter-admin`
 
-1. Confirm env parity in Vercel UI/CLI between `admin` and `crafter-admin` for production secrets
-2. Optionally attach final custom domain to `admin`
-3. Observe production with `admin` as backend for the public alias
-4. Remove legacy aliases / project only after that observation window
+1. Confirm env parity in Vercel UI/CLI between `admin` and `crafter-admin` for production secrets.
+2. Optionally attach final custom domain to `admin` (see checklist above).
+3. Observe production with `admin` as backend for the public alias.
+4. Remove legacy aliases / project only after that observation window.
 
 ## Retirement note
 

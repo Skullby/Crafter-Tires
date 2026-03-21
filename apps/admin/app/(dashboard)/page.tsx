@@ -116,7 +116,7 @@ export default async function DashboardPage() {
         <div className="rounded-2xl border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-900">
           <p className="font-semibold">Panel en mantenimiento</p>
           <p className="mt-1">
-            No se pudo conectar a la base de datos de staging (por ejemplo, falta <code>DATABASE_URL</code> en Vercel).
+            No se pudo conectar a la base de datos (por ejemplo, falta <code>DATABASE_URL</code> en Vercel).
             Los datos del dashboard no están disponibles, pero el resto de la app sigue funcionando.
           </p>
         </div>

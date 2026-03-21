@@ -1,12 +1,17 @@
 import type { NextAuthConfig } from "next-auth";
 
-const fallbackSecret = process.env.NODE_ENV === "production" ? "crafter-admin-staging-secret" : "crafter-admin-dev-secret";
+const fallbackSecret = process.env.NODE_ENV === "production" ? undefined : "crafter-admin-dev-secret";
+const runtimeSecret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET ?? fallbackSecret;
+
+if (!runtimeSecret) {
+  throw new Error("AUTH_SECRET or NEXTAUTH_SECRET is required for the admin panel deployment.");
+}
 
 export const authConfig: NextAuthConfig = {
-  // Prefer explicit secrets via AUTH_SECRET or NEXTAUTH_SECRET. For staging/preview
-  // environments where this might be missing, we fall back to a static secret so
-  // NextAuth doesn't crash with a server configuration error.
-  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET ?? fallbackSecret,
+  // Prefer explicit secrets via AUTH_SECRET or NEXTAUTH_SECRET. We only fall back
+  // to a static dev secret in non-production environments so that the prod
+  // build fails fast when those secrets are missing.
+  secret: runtimeSecret,
   session: {
     strategy: "jwt"
   },

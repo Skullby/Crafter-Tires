@@ -18,7 +18,7 @@ export default function ImportsPage() {
             <span className="font-medium text-slate-900">Servicio placeholder:</span> <code>apps/admin/lib/imports</code>
           </li>
           <li className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-            <span className="font-medium text-slate-900">Pipeline recomendado:</span> validación, staging, diff, upsert y reporte.
+            <span className="font-medium text-slate-900">Pipeline recomendado:</span> validación, diff, upsert y reporte.
           </li>
           <li className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
             <span className="font-medium text-slate-900">Control operativo:</span> conflictos por SKU y trazabilidad por lote.
