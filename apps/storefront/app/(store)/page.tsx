@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { MeasureFinder } from "../../components/measure-finder";
 import { ProductCard } from "../../components/product-card";
@@ -68,7 +69,20 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="flex items-center">
+            <div className="flex flex-col justify-center gap-4">
+              <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/10 p-3 shadow-[0_20px_60px_rgba(15,23,42,0.24)] backdrop-blur">
+                <div className="relative aspect-[16/10] overflow-hidden rounded-[1.5rem] bg-slate-900/40">
+                  <Image
+                    src="/hero-placeholder.svg"
+                    alt="Placeholder visual de neumaticos y vehiculo en la portada"
+                    fill
+                    priority
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 38vw"
+                  />
+                </div>
+              </div>
+
               <MeasureFinder className="w-full border-white/10 bg-white text-slate-950" />
             </div>
           </div>
