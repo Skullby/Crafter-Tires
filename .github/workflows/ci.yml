@@ -37,6 +37,9 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          AUTH_SECRET: ci-placeholder-not-a-real-secret
+          NEXTAUTH_SECRET: ci-placeholder-not-a-real-secret
 
   security:
     name: Dependency audit
