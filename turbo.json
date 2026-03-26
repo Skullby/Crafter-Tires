@@ -3,6 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "env": ["AUTH_SECRET", "NEXTAUTH_SECRET", "DATABASE_URL", "NEXT_PUBLIC_*"],
       "outputs": [".next/**", "dist/**"]
     },
     "dev": {
