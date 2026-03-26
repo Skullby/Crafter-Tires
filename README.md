@@ -58,8 +58,8 @@ pnpm db:studio
 - Admin v2: separate Vercel project `admin` (production URL not yet confirmed in workspace metadata)
 
 ## Canonical project docs
-- Workspace status: `/home/skullby/.openclaw/workspace/projects/crafter-tires/STATUS.md`
-- Workspace flows: `/home/skullby/.openclaw/workspace/projects/crafter-tires/FLOWS.md`
+- Workspace status: `/home/skullby/skullby-software/workspace/projects/crafter-tires/STATUS.md`
+- Workspace flows: `/home/skullby/skullby-software/workspace/projects/crafter-tires/FLOWS.md`
 
 ## Immediate priorities
 1. Confirm the production role and public URL for `storefront`, `admin`, and `crafter-admin`.
