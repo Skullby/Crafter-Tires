@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@crafter/database";
 import {
   applyApprovedPayment,
+  applyFailedPayment,
   fetchPaymentDetails,
   mapMercadoPagoStatus,
-  mapOrderStatusFromPaymentStatus
 } from "../../../../lib/mercadopago";
 
 export async function POST(request: Request) {
@@ -26,9 +26,9 @@ export async function POST(request: Request) {
     const payment = await prisma.payment.findFirst({
       where: {
         orderId,
-        provider: "MERCADOPAGO"
+        provider: "MERCADOPAGO",
       },
-      orderBy: { createdAt: "desc" }
+      orderBy: { createdAt: "desc" },
     });
 
     if (!payment) {
@@ -40,20 +40,17 @@ export async function POST(request: Request) {
       data: {
         providerPaymentId: String(paymentId),
         status,
-        rawPayload: details
-      }
+        rawPayload: details,
+      },
     });
 
     if (status === "APPROVED") {
       await applyApprovedPayment(orderId);
+    } else if (status === "PENDING") {
+      // Still waiting — no stock changes needed, reservation holds
     } else {
-      await prisma.order.update({
-        where: { id: orderId },
-        data: {
-          paymentStatus: status,
-          status: mapOrderStatusFromPaymentStatus(status)
-        }
-      });
+      // REJECTED or FAILED — release reserved stock
+      await applyFailedPayment(orderId, status);
     }
 
     return NextResponse.json({ ok: true });

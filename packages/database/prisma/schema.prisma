@@ -194,6 +194,8 @@ model Order {
   billingAddress    Json?
   notes             String?
   stockAppliedAt    DateTime?
+  stockReservedAt       DateTime?
+  reservationExpiresAt  DateTime?
   items             OrderItem[]
   payments          Payment[]
   createdAt         DateTime      @default(now())

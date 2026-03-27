@@ -1,4 +1,9 @@
-import { prisma, PaymentStatus } from "@crafter/database";
+import {
+  prisma,
+  PaymentStatus,
+  confirmReservedStock,
+  releaseStock,
+} from "@crafter/database";
 
 const MP_API_BASE = "https://api.mercadopago.com";
 
@@ -102,69 +107,41 @@ export function mapOrderStatusFromPaymentStatus(status: PaymentStatus) {
   return "CANCELED" as const;
 }
 
+/**
+ * Handle approved payment: confirm the stock reservation (or fall back to
+ * direct decrement if the reservation expired before the webhook arrived).
+ */
 export async function applyApprovedPayment(orderId: string) {
   await prisma.$transaction(async (tx) => {
-    const order = await tx.order.findUnique({
-      where: { id: orderId },
-      include: {
-        items: true
-      }
-    });
-
-    if (!order) {
-      return;
-    }
-
-    if (order.stockAppliedAt) {
-      if (order.paymentStatus !== PaymentStatus.APPROVED || order.status !== "PAID") {
-        await tx.order.update({
-          where: { id: order.id },
-          data: {
-            paymentStatus: PaymentStatus.APPROVED,
-            status: "PAID"
-          }
-        });
-      }
-      return;
-    }
-
-    for (const item of order.items) {
-      const inventory = await tx.inventory.findUnique({ where: { productId: item.productId } });
-      if (!inventory) {
-        throw new Error(`Inventario faltante para producto ${item.productId}`);
-      }
-
-      const updated = await tx.inventory.updateMany({
-        where: {
-          id: inventory.id,
-          stock: { gte: item.quantity }
-        },
-        data: {
-          stock: { decrement: item.quantity }
-        }
-      });
-
-      if (updated.count !== 1) {
-        throw new Error(`Stock insuficiente para aplicar la orden ${order.number}`);
-      }
-
-      await tx.inventoryMovement.create({
-        data: {
-          inventoryId: inventory.id,
-          change: -item.quantity,
-          reason: "ORDER_PAID",
-          note: `Orden ${order.number}`
-        }
-      });
-    }
+    await confirmReservedStock(tx, orderId);
 
     await tx.order.update({
-      where: { id: order.id },
+      where: { id: orderId },
       data: {
         status: "PAID",
         paymentStatus: PaymentStatus.APPROVED,
-        stockAppliedAt: new Date()
-      }
+      },
+    });
+  });
+}
+
+/**
+ * Handle terminal non-approved payment states: release reserved stock
+ * back into inventory and update order status.
+ */
+export async function applyFailedPayment(
+  orderId: string,
+  paymentStatus: PaymentStatus
+) {
+  await prisma.$transaction(async (tx) => {
+    await releaseStock(tx, orderId);
+
+    await tx.order.update({
+      where: { id: orderId },
+      data: {
+        paymentStatus,
+        status: mapOrderStatusFromPaymentStatus(paymentStatus),
+      },
     });
   });
 }
