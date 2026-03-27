@@ -7,6 +7,7 @@ import { productInputSchema } from "@crafter/database";
 import { auth, signOut } from "./auth";
 import { prisma } from "@crafter/database";
 import { z } from "zod";
+import { revalidateStorefrontProducts } from "./storefront-revalidation";
 
 async function requireUser() {
   const session = await auth();
@@ -94,6 +95,7 @@ export async function createProductAction(formData: FormData) {
   });
 
   revalidatePath("/productos");
+  await revalidateStorefrontProducts();
 }
 
 export async function updateProductAction(formData: FormData) {
@@ -149,6 +151,7 @@ export async function updateProductAction(formData: FormData) {
 
   revalidatePath("/productos");
   revalidatePath("/");
+  await revalidateStorefrontProducts();
 }
 
 export async function updateProductDetailsAction(formData: FormData) {
@@ -258,6 +261,7 @@ export async function updateProductDetailsAction(formData: FormData) {
   revalidatePath("/productos");
   revalidatePath(`/productos/${id}/editar`);
   revalidatePath("/catalogo");
+  await revalidateStorefrontProducts();
 }
 
 export async function archiveProductAction(formData: FormData) {
@@ -265,6 +269,7 @@ export async function archiveProductAction(formData: FormData) {
   const id = String(formData.get("id"));
   await prisma.product.update({ where: { id }, data: { active: false } });
   revalidatePath("/productos");
+  await revalidateStorefrontProducts();
 }
 
 export async function adjustStockAction(formData: FormData) {
@@ -294,6 +299,7 @@ export async function adjustStockAction(formData: FormData) {
 
   revalidatePath("/inventario");
   revalidatePath("/catalogo");
+  await revalidateStorefrontProducts();
 }
 
 const simpleSchema = z.object({
