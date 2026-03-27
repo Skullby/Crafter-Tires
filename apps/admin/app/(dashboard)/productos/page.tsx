@@ -100,8 +100,8 @@ export default async function ProductsPage() {
                   <p className="text-lg font-semibold text-slate-950">{product.name}</p>
                   <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
                     <span className="admin-kbd-chip">SKU {product.sku}</span>
-                    <span className="admin-kbd-chip">{product.brand.name}</span>
-                    <span className="admin-kbd-chip">{product.category.name}</span>
+                    <span className="admin-kbd-chip">{product.brand?.name ?? "Sin marca"}</span>
+                    <span className="admin-kbd-chip">{product.category?.name ?? "Sin categoría"}</span>
                   </div>
                 </div>
                 <Link className="admin-btn-secondary" href={`/productos/${product.id}/editar`}>
