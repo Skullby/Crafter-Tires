@@ -1,20 +1,16 @@
 "use server";
 
-import { createRevalidationSignature } from "@crafter/database";
-
-const STOREFRONT_REVALIDATE_URL = `${process.env.NEXT_PUBLIC_STOREFRONT_URL ?? "http://localhost:3000"}/api/revalidate`;
+const STOREFRONT_BASE_URL =
+  process.env.NEXT_PUBLIC_STOREFRONT_URL ?? "https://storefront-seven-tan.vercel.app";
+const STOREFRONT_REVALIDATE_URL = `${STOREFRONT_BASE_URL}/api/revalidate`;
 
 export async function revalidateStorefrontProducts() {
-  const issuedAt = Date.now();
-  const scope = "products";
-  const signature = createRevalidationSignature({ scope, issuedAt });
-
   const response = await fetch(STOREFRONT_REVALIDATE_URL, {
     method: "POST",
     headers: {
       "content-type": "application/json"
     },
-    body: JSON.stringify({ scope, issuedAt, signature }),
+    body: JSON.stringify({ scope: "products" }),
     cache: "no-store"
   });
 
