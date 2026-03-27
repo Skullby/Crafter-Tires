@@ -1,5 +1,6 @@
 import { prisma } from "@crafter/database";
 import type { VehicleType } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 
 export type CatalogFilters = {
   query?: string;
@@ -32,9 +33,13 @@ export async function getFeaturedProducts() {
   });
 }
 
-export async function getCategories() {
-  return prisma.category.findMany({ where: { active: true }, orderBy: { name: "asc" } });
-}
+export const getCategories = unstable_cache(
+  async () => {
+    return prisma.category.findMany({ where: { active: true }, orderBy: { name: "asc" } });
+  },
+  ["categories-active"],
+  { revalidate: 300 }
+);
 
 export async function getBrands() {
   return prisma.brand.findMany({ where: { active: true }, orderBy: { name: "asc" } });

@@ -8,9 +8,8 @@ declare global {
 
 export const prisma = global.prisma ?? new PrismaClient();
 
-if (process.env.NODE_ENV !== "production") {
-  global.prisma = prisma;
-}
+// Cache on global to reuse across hot-reloads (dev) and serverless invocations (prod)
+global.prisma = prisma;
 
 export * from "@prisma/client";
 export * from "./validation";

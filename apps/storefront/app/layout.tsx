@@ -17,8 +17,6 @@ const displayFont = Barlow_Condensed({
   variable: "--font-display"
 });
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_STOREFRONT_URL ?? "http://localhost:3000"),
   title: {
