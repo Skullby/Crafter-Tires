@@ -25,11 +25,6 @@ function parseNumber(value?: string) {
   return Number.isNaN(parsed) ? undefined : parsed;
 }
 
-function parseVehicleType(value?: string): VehicleType | undefined {
-  if (!value) return undefined;
-  return ["AUTO", "SUV", "CAMIONETA", "UTILITARIO"].includes(value) ? (value as VehicleType) : undefined;
-}
-
 export default async function CatalogPage({
   searchParams
 }: {
