@@ -6,6 +6,8 @@ import { ProductCard } from "../../../../components/product-card";
 import { getProductBySlug, getRelatedProducts } from "../../../../lib/catalog";
 import { formatCurrency, formatMeasure, formatVehicleType } from "../../../../lib/format";
 
+export const revalidate = 120;
+
 export default async function ProductPage({ params }: { params: { slug: string } }) {
   const product = await getProductBySlug(params.slug);
 

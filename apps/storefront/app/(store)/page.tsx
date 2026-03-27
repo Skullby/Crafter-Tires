@@ -4,6 +4,8 @@ import { MeasureFinder } from "../../components/measure-finder";
 import { ProductCard } from "../../components/product-card";
 import { getCategories, getFeaturedProducts } from "../../lib/catalog";
 
+export const revalidate = 120;
+
 const benefits = [
   {
     title: "Compra clara",

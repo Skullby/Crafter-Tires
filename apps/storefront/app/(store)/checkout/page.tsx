@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { CheckoutForm } from "../../../components/checkout-form";
-import { getCart } from "../../../lib/cart";
+import { findCart } from "../../../lib/cart";
 
 export default async function CheckoutPage() {
-  const cart = await getCart();
+  const cart = await findCart();
 
-  if (cart.items.length === 0) {
+  if (!cart || cart.items.length === 0) {
     redirect("/carrito");
   }
 

@@ -3,6 +3,7 @@ import { prisma, Prisma } from "@crafter/database";
 import { checkoutSchema } from "@crafter/database";
 import { clearCart, computeCartTotals, getCart } from "../../../../lib/cart";
 import { createMercadoPagoPreference } from "../../../../lib/mercadopago";
+import { attachSessionCookie } from "../../../../lib/session";
 
 function createOrderNumber() {
   const now = new Date();
@@ -116,11 +117,11 @@ export async function POST(request: Request) {
 
       await clearCart();
 
-      return NextResponse.json({
+      return attachSessionCookie(NextResponse.json({
         orderId: order.id,
         initPoint: preference.init_point,
         sandboxInitPoint: preference.sandbox_init_point
-      });
+      }));
     } catch (error) {
       await prisma.payment.update({
         where: { id: order.payments[0].id },

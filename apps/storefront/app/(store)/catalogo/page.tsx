@@ -1,5 +1,6 @@
 import Link from "next/link";
-import type { VehicleType } from "@prisma/client";
+
+type VehicleType = "AUTO" | "SUV" | "CAMIONETA" | "UTILITARIO";
 import { MeasureFinder } from "../../../components/measure-finder";
 import { ProductCard } from "../../../components/product-card";
 import { getBrands, getCatalogProducts, getCategories } from "../../../lib/catalog";
@@ -16,10 +17,17 @@ function parseSort(value?: string): CatalogFilters["sort"] {
   return value && VALID_SORT_VALUES.has(value) ? (value as CatalogFilters["sort"]) : "recommended";
 }
 
+export const revalidate = 120;
+
 function parseNumber(value?: string) {
   if (!value) return undefined;
   const parsed = Number(value);
   return Number.isNaN(parsed) ? undefined : parsed;
+}
+
+function parseVehicleType(value?: string): VehicleType | undefined {
+  if (!value) return undefined;
+  return ["AUTO", "SUV", "CAMIONETA", "UTILITARIO"].includes(value) ? (value as VehicleType) : undefined;
 }
 
 export default async function CatalogPage({

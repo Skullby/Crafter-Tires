@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { ProductCard } from "../../../../components/product-card";
 import { getCatalogProducts } from "../../../../lib/catalog";
 
+export const revalidate = 120;
+
 export default async function CategoryPage({ params }: { params: { slug: string } }) {
   const products = await getCatalogProducts({ categorySlug: params.slug, sort: "recommended" });
 

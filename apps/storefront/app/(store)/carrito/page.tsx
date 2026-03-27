@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { CartClient } from "../../../components/cart-client";
-import { computeCartTotals, getCart } from "../../../lib/cart";
+import { computeCartTotals, findCart } from "../../../lib/cart";
 import { formatCurrency, formatMeasure } from "../../../lib/format";
 
-type CartData = Awaited<ReturnType<typeof getCart>>;
+type CartData = NonNullable<Awaited<ReturnType<typeof findCart>>>;
 type CartItem = CartData["items"][number];
 
 export default async function CartPage() {
-  const cart = await getCart();
-  const totals = computeCartTotals(cart.items);
+  const cart = await findCart();
+  const items = cart?.items ?? [];
+  const totals = computeCartTotals(items);
 
-  const mappedItems = cart.items.map((item: CartItem) => ({
+  const mappedItems = items.map((item: CartItem) => ({
     id: item.id,
     quantity: item.quantity,
     unitPrice: item.unitPrice.toNumber(),

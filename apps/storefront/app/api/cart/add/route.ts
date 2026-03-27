@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { addToCart } from "../../../../lib/cart";
+import { attachSessionCookie } from "../../../../lib/session";
 
 const schema = z.object({
   productId: z.string().cuid(),
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const parsed = schema.parse(body);
     await addToCart(parsed.productId, parsed.quantity);
-    return NextResponse.json({ ok: true });
+    return attachSessionCookie(NextResponse.json({ ok: true }));
   } catch (error) {
     return NextResponse.json({ ok: false, error: "No se pudo agregar el producto" }, { status: 400 });
   }
