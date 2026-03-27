@@ -3,13 +3,15 @@ import Link from "next/link";
 import { AddToCartButton } from "./add-to-cart-button";
 import { formatCurrency, formatMeasure, formatVehicleType } from "../lib/format";
 
+type DecimalLike = number | string | { toNumber(): number };
+
 type ProductCardProps = {
   product: {
     id: string;
     slug: string;
     name: string;
-    price: { toNumber(): number };
-    previousPrice: { toNumber(): number } | null;
+    price: DecimalLike;
+    previousPrice: DecimalLike | null;
     discountPercentage: number | null;
     width: number;
     height: number;
@@ -28,6 +30,18 @@ type ProductCardProps = {
     }>;
   };
 };
+
+function toCurrencyNumber(value: DecimalLike) {
+  if (typeof value === "number") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    return Number(value);
+  }
+
+  return value.toNumber();
+}
 
 function getStockLabel(stock: number) {
   if (stock <= 0) {
@@ -100,12 +114,12 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
           {product.previousPrice ? (
             <p className="text-sm text-slate-400 line-through">
-              {formatCurrency(product.previousPrice.toNumber())}
+              {formatCurrency(toCurrencyNumber(product.previousPrice))}
             </p>
           ) : null}
           <div className="flex items-end justify-between gap-3">
             <p className="text-3xl font-semibold leading-none text-slate-950">
-              {formatCurrency(product.price.toNumber())}
+              {formatCurrency(toCurrencyNumber(product.price))}
             </p>
             {product.discountPercentage ? (
               <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
