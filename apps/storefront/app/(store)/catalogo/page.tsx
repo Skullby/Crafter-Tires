@@ -3,6 +3,18 @@ import type { VehicleType } from "@prisma/client";
 import { MeasureFinder } from "../../../components/measure-finder";
 import { ProductCard } from "../../../components/product-card";
 import { getBrands, getCatalogProducts, getCategories } from "../../../lib/catalog";
+import type { CatalogFilters } from "../../../lib/catalog";
+
+const VALID_VEHICLE_TYPES: ReadonlySet<string> = new Set<string>(["AUTO", "SUV", "CAMIONETA", "UTILITARIO"]);
+const VALID_SORT_VALUES: ReadonlySet<string> = new Set<string>(["price_asc", "price_desc", "bestsellers", "recommended"]);
+
+function parseVehicleType(value?: string): VehicleType | undefined {
+  return value && VALID_VEHICLE_TYPES.has(value) ? (value as VehicleType) : undefined;
+}
+
+function parseSort(value?: string): CatalogFilters["sort"] {
+  return value && VALID_SORT_VALUES.has(value) ? (value as CatalogFilters["sort"]) : "recommended";
+}
 
 function parseNumber(value?: string) {
   if (!value) return undefined;
@@ -21,11 +33,11 @@ export default async function CatalogPage({
     width: parseNumber(typeof searchParams.ancho === "string" ? searchParams.ancho : undefined),
     height: parseNumber(typeof searchParams.alto === "string" ? searchParams.alto : undefined),
     rim: parseNumber(typeof searchParams.rodado === "string" ? searchParams.rodado : undefined),
-    vehicleType: typeof searchParams.tipo === "string" ? (searchParams.tipo as VehicleType) : undefined,
+    vehicleType: parseVehicleType(typeof searchParams.tipo === "string" ? searchParams.tipo : undefined),
     minPrice: parseNumber(typeof searchParams.minPrecio === "string" ? searchParams.minPrecio : undefined),
     maxPrice: parseNumber(typeof searchParams.maxPrecio === "string" ? searchParams.maxPrecio : undefined),
     inStock: searchParams.stock === "1",
-    sort: typeof searchParams.sort === "string" ? (searchParams.sort as any) : "recommended"
+    sort: parseSort(typeof searchParams.sort === "string" ? searchParams.sort : undefined)
   };
 
   const [products, brands, categories] = await Promise.all([
