@@ -6,6 +6,10 @@ import { ProductCard } from "../../../components/product-card";
 import { getBrands, getCatalogProducts, getCategories } from "../../../lib/catalog";
 import type { CatalogFilters } from "../../../lib/catalog";
 
+type Product = Awaited<ReturnType<typeof getCatalogProducts>>[number];
+type Brand = Awaited<ReturnType<typeof getBrands>>[number];
+type Category = Awaited<ReturnType<typeof getCategories>>[number];
+
 const VALID_VEHICLE_TYPES: ReadonlySet<string> = new Set<string>(["AUTO", "SUV", "CAMIONETA", "UTILITARIO"]);
 const VALID_SORT_VALUES: ReadonlySet<string> = new Set<string>(["price_asc", "price_desc", "bestsellers", "recommended"]);
 
@@ -63,7 +67,7 @@ export default async function CatalogPage({
                 Filtra por marca, medida, tipo de vehiculo y precio. La estructura prioriza lectura rapida y continuidad de compra.
               </p>
               <div className="flex flex-wrap gap-2">
-                {categories.slice(0, 5).map((category) => (
+                {categories.slice(0, 5).map((category: Category) => (
                   <Link
                     key={category.id}
                     href={`/categoria/${category.slug}`}
@@ -103,7 +107,7 @@ export default async function CatalogPage({
                 <span>Marca</span>
                 <select name="marca" className="field-input" defaultValue={filters.brand}>
                   <option value="">Todas las marcas</option>
-                  {brands.map((brand) => (
+                  {brands.map((brand: Brand) => (
                     <option key={brand.id} value={brand.slug}>
                       {brand.name}
                     </option>
@@ -208,7 +212,7 @@ export default async function CatalogPage({
               </div>
             ) : (
               <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {products.map((product) => (
+                {products.map((product: Product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>

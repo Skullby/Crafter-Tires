@@ -154,9 +154,9 @@ export async function clearCart() {
 }
 
 export function computeCartTotals(
-  items: Array<{ quantity: number; unitPrice: { toNumber(): number } }>
+  items: Array<{ quantity: number; unitPrice: number | string | { toNumber(): number } }>
 ) {
-  const subtotal = items.reduce((acc, item) => acc + item.unitPrice.toNumber() * item.quantity, 0);
+  const subtotal = items.reduce((acc, item) => acc + Number(item.unitPrice) * item.quantity, 0);
   const shipping = 0;
   const total = subtotal + shipping;
 

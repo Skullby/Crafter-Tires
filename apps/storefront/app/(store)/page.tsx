@@ -4,6 +4,9 @@ import { MeasureFinder } from "../../components/measure-finder";
 import { ProductCard } from "../../components/product-card";
 import { getCategories, getFeaturedProducts } from "../../lib/catalog";
 
+type Category = Awaited<ReturnType<typeof getCategories>>[number];
+type Product = Awaited<ReturnType<typeof getFeaturedProducts>>[number];
+
 export const revalidate = 120;
 
 const benefits = [
@@ -104,7 +107,7 @@ export default async function HomePage() {
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {categories.map((category, index) => (
+            {categories.map((category: Category, index: number) => (
               <Link
                 key={category.id}
                 href={`/categoria/${category.slug}`}
@@ -146,7 +149,7 @@ export default async function HomePage() {
             </div>
 
             <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-              {featured.map((product) => (
+              {featured.map((product: Product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>

@@ -14,7 +14,7 @@ export default async function CartPage() {
   const mappedItems = items.map((item: CartItem) => ({
     id: item.id,
     quantity: item.quantity,
-    unitPrice: item.unitPrice.toNumber(),
+    unitPrice: Number(item.unitPrice),
     product: {
       id: item.product.id,
       name: item.product.name,

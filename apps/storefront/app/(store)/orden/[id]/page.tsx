@@ -2,15 +2,23 @@ import { prisma } from "@crafter/database";
 import { notFound } from "next/navigation";
 import { formatCurrency } from "../../../../lib/format";
 
-export default async function OrderPage({ params }: { params: { id: string } }) {
-  const order = await prisma.order.findUnique({
-    where: { id: params.id },
+type OrderWithItems = NonNullable<Awaited<ReturnType<typeof getOrder>>>;
+
+function getOrder(id: string) {
+  return prisma.order.findUnique({
+    where: { id },
     include: { items: true, payments: true }
   });
+}
 
-  if (!order) {
+export default async function OrderPage({ params }: { params: { id: string } }) {
+  const result = await getOrder(params.id);
+
+  if (!result) {
     notFound();
   }
+
+  const order = result as OrderWithItems;
 
   return (
     <div className="section-space">
@@ -29,7 +37,7 @@ export default async function OrderPage({ params }: { params: { id: string } }) 
             <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4">
               <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Total</p>
               <p className="mt-2 text-3xl font-semibold text-slate-950">
-                {formatCurrency(order.total.toNumber())}
+                {formatCurrency(Number(order.total))}
               </p>
             </div>
           </div>
@@ -38,7 +46,7 @@ export default async function OrderPage({ params }: { params: { id: string } }) 
         <section className="surface-card p-6 md:p-8">
           <h2 className="text-2xl font-semibold text-slate-950">Productos</h2>
           <ul className="mt-6 space-y-3">
-            {order.items.map((item) => (
+            {order.items.map((item: OrderWithItems["items"][number]) => (
               <li
                 key={item.id}
                 className="flex flex-col gap-3 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4 md:flex-row md:items-center md:justify-between"
@@ -48,7 +56,7 @@ export default async function OrderPage({ params }: { params: { id: string } }) 
                   <p className="text-sm text-slate-600">Cantidad: {item.quantity}</p>
                 </div>
                 <p className="text-lg font-semibold text-slate-950">
-                  {formatCurrency(item.total.toNumber())}
+                  {formatCurrency(Number(item.total))}
                 </p>
               </li>
             ))}

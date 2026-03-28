@@ -6,6 +6,9 @@ import { ProductCard } from "../../../../components/product-card";
 import { getProductBySlug, getRelatedProducts } from "../../../../lib/catalog";
 import { formatCurrency, formatMeasure, formatVehicleType } from "../../../../lib/format";
 
+type Product = NonNullable<Awaited<ReturnType<typeof getProductBySlug>>>;
+type RelatedProduct = Awaited<ReturnType<typeof getRelatedProducts>>[number];
+
 export const revalidate = 120;
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
@@ -94,12 +97,12 @@ export default async function ProductPage({ params }: { params: { slug: string }
               <div className="mt-4">
                 {product.previousPrice ? (
                   <p className="text-base text-slate-400 line-through">
-                    {formatCurrency(product.previousPrice.toNumber())}
+                    {formatCurrency(Number(product.previousPrice))}
                   </p>
                 ) : null}
                 <div className="mt-2 flex flex-wrap items-end gap-3">
                   <p className="text-5xl font-semibold leading-none text-slate-950">
-                    {formatCurrency(product.price.toNumber())}
+                    {formatCurrency(Number(product.price))}
                   </p>
                   {product.discountPercentage ? (
                     <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700">
@@ -142,7 +145,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
             <p className="eyebrow">Detalles tecnicos</p>
             <h2 className="mt-2 text-3xl font-semibold text-slate-950">Informacion clave del neumatico</h2>
             <ul className="mt-6 space-y-3">
-              {product.specifications.map((spec) => (
+              {product.specifications.map((spec: Product["specifications"][number]) => (
                 <li
                   key={spec.id}
                   className="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
@@ -158,7 +161,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
             <p className="eyebrow">Productos relacionados</p>
             <h2 className="mt-2 text-3xl font-semibold text-slate-950">Opciones para seguir comparando</h2>
             <div className="mt-6 grid gap-5 md:grid-cols-2">
-              {related.map((item) => (
+              {related.map((item: RelatedProduct) => (
                 <ProductCard key={item.id} product={item} />
               ))}
             </div>

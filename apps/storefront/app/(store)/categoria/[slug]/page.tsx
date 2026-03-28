@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { ProductCard } from "../../../../components/product-card";
 import { getCatalogProducts } from "../../../../lib/catalog";
 
+type Product = Awaited<ReturnType<typeof getCatalogProducts>>[number];
+
 export const revalidate = 120;
 
 export default async function CategoryPage({ params }: { params: { slug: string } }) {
@@ -40,7 +42,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
         </section>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {products.map((product) => (
+          {products.map((product: Product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
